@@ -290,6 +290,48 @@
             cursor: pointer;
         }
         
+        /* Location Status Styles */
+        #location-status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        #location-status.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #81c784;
+        }
+        
+        #location-status.error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+        }
+        
+        #location-status.loading {
+            background-color: #fff3e0;
+            color: #f57c00;
+            border: 1px solid #ffb74d;
+        }
+        
+        .location-btn {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .location-btn:hover {
+            background-color: #1565c0;
+        }
+        
         /* Footer Styles */
         footer {
             background-color: #333;
@@ -461,6 +503,24 @@
                     <label for="customer-address">Delivery Address</label>
                     <textarea id="customer-address" class="form-control" rows="3" placeholder="Enter your full delivery address"></textarea>
                 </div>
+                
+                <!-- Location Capture Section -->
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="share-location" style="width: auto; margin-right: 8px;">
+                        Share my current location for accurate delivery
+                    </label>
+                    <button type="button" id="get-location-btn" class="location-btn" style="display: none;">
+                        <i class="fas fa-map-marker-alt"></i> Get My Location
+                    </button>
+                    <div id="location-status"></div>
+                    
+                    <!-- Hidden fields to store location data -->
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
+                    <input type="hidden" id="location-address" name="location-address">
+                </div>
+                
                 <button id="place-order-btn" class="order-btn">
                     <i class="fab fa-whatsapp"></i> Place Order via WhatsApp
                 </button>
@@ -502,6 +562,7 @@
         var products = [];
         var cart = {}; // Object to store selected items
         var currentCategory = "all"; // Track current category
+        var userLocation = null; // Store user's location
 
         fetch('assets/data.json')
             .then(response => response.json())
@@ -580,6 +641,100 @@
             }
         });
 
+        // ============ LOCATION CAPTURE FUNCTIONALITY ============
+        
+        // Show/hide location button when checkbox is toggled
+        document.getElementById('share-location').addEventListener('change', function() {
+            const getLocationBtn = document.getElementById('get-location-btn');
+            const locationStatus = document.getElementById('location-status');
+            
+            if (this.checked) {
+                getLocationBtn.style.display = 'inline-block';
+                locationStatus.innerHTML = '<i class="fas fa-info-circle"></i> Click the button below to share your location';
+                locationStatus.className = 'loading';
+            } else {
+                getLocationBtn.style.display = 'none';
+                locationStatus.innerHTML = '';
+                locationStatus.className = '';
+                userLocation = null;
+                document.getElementById('latitude').value = '';
+                document.getElementById('longitude').value = '';
+                document.getElementById('location-address').value = '';
+            }
+        });
+        
+        // Get location when button is clicked
+        document.getElementById('get-location-btn').addEventListener('click', function() {
+            const locationStatus = document.getElementById('location-status');
+            
+            if (!navigator.geolocation) {
+                locationStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Geolocation is not supported by your browser';
+                locationStatus.className = 'error';
+                return;
+            }
+            
+            locationStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting your location...';
+            locationStatus.className = 'loading';
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    // Store location
+                    userLocation = { lat, lng };
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                    
+                    // Get address from coordinates (reverse geocoding)
+                    getAddressFromCoords(lat, lng);
+                    
+                    locationStatus.innerHTML = `<i class="fas fa-check-circle"></i> Location captured successfully!<br>
+                        <small>Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}</small><br>
+                        <a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" style="color: #1976d2;">
+                            <i class="fas fa-map-marker-alt"></i> View on Google Maps
+                        </a>`;
+                    locationStatus.className = 'success';
+                },
+                function(error) {
+                    let errorMessage = '';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = "Location access denied. Please enable location permissions in your browser.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = "Location information is unavailable.";
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = "Location request timed out.";
+                            break;
+                        default:
+                            errorMessage = "An unknown error occurred.";
+                    }
+                    locationStatus.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${errorMessage}`;
+                    locationStatus.className = 'error';
+                }
+            );
+        });
+        
+        // Function to get address from coordinates (optional - requires API key for production)
+        function getAddressFromCoords(lat, lng) {
+            // Using Nominatim (OpenStreetMap) for reverse geocoding - free, no API key needed
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.display_name) {
+                        document.getElementById('location-address').value = data.display_name;
+                        const locationStatus = document.getElementById('location-status');
+                        locationStatus.innerHTML += `<br><small><strong>Address:</strong> ${data.display_name}</small>`;
+                    }
+                })
+                .catch(error => {
+                    console.log('Could not fetch address:', error);
+                    // Not critical, so we don't show error to user
+                });
+        }
+
         // Handle Order Submission
         document.getElementById('place-order-btn').addEventListener('click', function() {
             const name = document.getElementById('customer-name').value.trim();
@@ -600,8 +755,23 @@
             let message = `*New Order from VEE KAY HOME NEEDS Website*\n\n`;
             message += `*Name:* ${name}\n`;
             message += `*Mobile:* ${mobile}\n`;
-            message += `*Address:* ${address}\n\n`;
-            message += `*Order Details:*\n`;
+            message += `*Address:* ${address}\n`;
+            
+            // Add location if captured
+            if (userLocation) {
+                const lat = document.getElementById('latitude').value;
+                const lng = document.getElementById('longitude').value;
+                const locationAddr = document.getElementById('location-address').value;
+                
+                message += `\n*📍 Location Details:*\n`;
+                message += `Coordinates: ${lat}, ${lng}\n`;
+                message += `Google Maps: https://maps.google.com/?q=${lat},${lng}\n`;
+                if (locationAddr) {
+                    message += `Address: ${locationAddr}\n`;
+                }
+            }
+            
+            message += `\n*Order Details:*\n`;
             
             cartItems.forEach((itemName, index) => {
                 const item = cart[itemName];
