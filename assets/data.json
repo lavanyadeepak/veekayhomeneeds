@@ -15,16 +15,16 @@
     { "name": "Neethu Kuchi Vadagam", "tamilName": "நீத்து குச்சி வடகம்", "weight": "250 gms", "price": "₹90.00", "category": "vadam" },
     { "name": "Tomato Vadagam", "tamilName": "தக்காளி வடகம்", "weight": "200 gms", "price": "₹90.00", "category": "vadam" },
     { "name": "Lemon Pickle", "tamilName": "எலுமிச்சை ஊறுகாய்", "weight": "250 gms", "price": "₹95.00", "category": "pickle" },
-    { "name": "Avarakai Pickle", "tamilName": "அவாரக்காய் ஊறுகாய்", "weight": "250 gms", "price": "₹95.00", "category": "pickle" },
+    { "name": "Avaakakai Pickle", "tamilName": "ஆவக்காய் ஊறுகாய்", "weight": "250 gms", "price": "₹95.00", "category": "pickle" },
     { "name": "Cut Mango Pickle", "tamilName": "மாம்பழம் ஊறுகாய்", "weight": "250 gms", "price": "₹95.00", "category": "pickle" },
     { "name": "Citron Pickle", "tamilName": "எலுமிச்சை ஊறுகாய்", "weight": "250 gms", "price": "₹95.00", "category": "pickle" },
     { "name": "Inji Puli Pickle", "tamilName": "இஞ்சி புளி ஊறுகாய்", "weight": "250 gms", "price": "₹130.00", "category": "pickle" },
     { "name": "Banana Stem Pickle", "tamilName": "வாழை தண்டு ஊறுகாய்", "weight": "250 gms", "price": "₹90.00", "category": "pickle" },
     { "name": "Mango Inji Pickle", "tamilName": "மாங்காய் இனி ஊறுகாய்", "weight": "250 gms", "price": "₹100.00", "category": "pickle" },
     { "name": "Mavadu Pickle", "tamilName": "மாவடு ஊறுகாய்", "weight": "500 gms", "price": "₹100.00", "category": "pickle" },
-    { "name": "Maavai Pickle", "tamilName": "மாங்காய் ஊறுகாய்", "weight": "250 gms", "price": "₹95.00", "category": "pickle" },
+    { "name": "Maakali Kizhangu Pickle", "tamilName": "மாகாளிக் கிழங்கு ஊறுகாய்", "weight": "250 gms", "price": "₹95.00", "category": "pickle" },
     { "name": "Garlic Pickle", "tamilName": "பூண்டு ஊறுகாய்", "weight": "250 gms", "price": "₹95.00", "category": "pickle" },
-    { "name": "Sorungal Thokku", "tamilName": "சோழங்கல் தொக்கு", "weight": "200 gms", "price": "₹95.00", "category": "thokku" },
+    { "name": "Gongura Thokku", "tamilName": "கொங்குரா தொக்கு", "weight": "200 gms", "price": "₹95.00", "category": "thokku" },
     { "name": "Tomato Thokku", "tamilName": "தக்காளி தொக்கு", "weight": "200 gms", "price": "₹95.00", "category": "thokku" },
     { "name": "Mango Thokku", "tamilName": "மாங்காய் தொக்கு", "weight": "200 gms", "price": "₹95.00", "category": "thokku" },
     { "name": "Mudakathan Thokku", "tamilName": "முடக்கத்தான் தொக்கு", "weight": "200 gms", "price": "₹100.00", "category": "thokku" },
@@ -38,6 +38,12 @@
     { "name": "Paruppu Podi", "tamilName": "பருப்பு பொடி", "weight": "100 gms", "price": "₹65.00", "category": "powder" },
     { "name": "Idli Milagai Podi", "tamilName": "இட்லி மிளகாய் பொடி", "weight": "100 gms", "price": "₹65.00", "category": "powder" },
     { "name": "Sundakkai Vathal", "tamilName": "சுண்டக்காய் வத்தல்", "weight": "100 gms", "price": "₹60.00", "category": "vathal" },
-    { "name": "Manthakali Vathal", "tamilName": "மாந்தக்காளி வத்தல்", "weight": "100 gms", "price": "₹60.00", "category": "vathal" }
+    { "name": "Manthakali Vathal", "tamilName": "மாந்தக்காளி வத்தல்", "weight": "100 gms", "price": "₹60.00", "category": "vathal" },
+     { "name": "Onion Vathal", "tamilName": "ஆனியன் வத்தல்", "weight": "", "price": "₹90.00", "category": "vathal" },
+     { "name": "Kothavarangai Vathal", "tamilName": "கொத்தவரங்காய் வத்தல் ", "weight": "", "price": "₹90.00", "category": "vathal" },
+     { "name": "More Milagai Vathal", "tamilName": "மோர் மிளகாய் வத்தல்", "weight": "", "price": "₹50.00", "category": "vathal" },
+     { "name": "Uppu Naarthangai", "tamilName": "உப்பு நார்த்தங்காய்", "weight": "", "price": "₹50.00", "category": "vathal" },
+     { "name": "Veppampoo", "tamilName": "வேப்பம்பூ", "weight": "", "price": "₹50.00", "category": "vathal" },
+     { "name": "Veppilai Kattu", "tamilName": "வேப்பிலை கட்டு", "weight": "", "price": "₹50.00", "category": "vathal" }
   ]
 }
