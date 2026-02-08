@@ -366,54 +366,16 @@
     </footer>
 
     <script>
-        // Product data
-        const products = [
-            { name: "Ulundu Appalam", tamilName: "உளுந்து அப்பளம்", weight: "250 gms", price: "₹116.00", category: "appalam" },
-            { name: "Rice Appalam", tamilName: "அரிசி அப்பளம்", weight: "300 gms", price: "₹115.00", category: "appalam" },
-            { name: "Maricini Kizhangu Appalam", tamilName: "மாசி நெல்", weight: "250 gms", price: "₹100.00", category: "appalam" },
-            { name: "Pepper Appalam", tamilName: "மிளகு அப்பளம்", weight: "250 gms", price: "₹95.00", category: "appalam" },
-            { name: "Garlic Appalam", tamilName: "பூண்டு அப்பளம்", weight: "200 gms", price: "₹90.00", category: "appalam" },
-            { name: "Pudina Elai Vadam", tamilName: "புடினா இலை வடாம்", weight: "200 gms", price: "₹90.00", category: "vadam" },
-            { name: "Irattai Appalam", tamilName: "இரட்டை அப்பளம்", weight: "250 gms", price: "₹90.00", category: "appalam" },
-            { name: "Elai Vadam", tamilName: "இலை வடாம்", weight: "200 gms", price: "₹90.00", category: "vadam" },
-            { name: "Tomato Elai Vadam", tamilName: "தக்காளி இலை வடாம்", weight: "200 gms", price: "₹90.00", category: "vadam" },
-            { name: "Appala Poo", tamilName: "அப்பளா பூ", weight: "250 gms", price: "₹90.00", category: "appalam" },
-            { name: "Javarisi Vadagam", tamilName: "ஜவ்வரிசி வடகம்", weight: "250 gms", price: "₹90.00", category: "vadam" },
-            { name: "Omavodi Vadagam", tamilName: "ஓமவொடி வடகம்", weight: "250 gms", price: "₹90.00", category: "vadam" },
-            { name: "Neethu Kuchi Vadagam", tamilName: "நீத்து குச்சி வடகம்", weight: "250 gms", price: "₹90.00", category: "vadam" },
-            { name: "Tomato Vadagam", tamilName: "தக்காளி வடகம்", weight: "200 gms", price: "₹90.00", category: "vadam" },
-            { name: "Lemon Pickle", tamilName: "எலுமிச்சை ஊறுகாய்", weight: "250 gms", price: "₹95.00", category: "pickle" },
-            { name: "Avarakai Pickle", tamilName: "அவாரக்காய் ஊறுகாய்", weight: "250 gms", price: "₹95.00", category: "pickle" },
-            { name: "Cut Mango Pickle", tamilName: "மாம்பழம் ஊறுகாய்", weight: "250 gms", price: "₹95.00", category: "pickle" },
-            { name: "Citron Pickle", tamilName: "எலுமிச்சை ஊறுகாய்", weight: "250 gms", price: "₹95.00", category: "pickle" },
-            { name: "Inji Puli Pickle", tamilName: "இஞ்சி புளி ஊறுகாய்", weight: "250 gms", price: "₹130.00", category: "pickle" },
-            { name: "Banana Stem Pickle", tamilName: "வாழை தண்டு ஊறுகாய்", weight: "250 gms", price: "₹90.00", category: "pickle" },
-            { name: "Mango Inji Pickle", tamilName: "மாங்காய் இனி ஊறுகாய்", weight: "250 gms", price: "₹100.00", category: "pickle" },
-            { name: "Mavadu Pickle", tamilName: "மாவடு ஊறுகாய்", weight: "500 gms", price: "₹100.00", category: "pickle" },
-            { name: "Maavai Pickle", tamilName: "மாங்காய் ஊறுகாய்", weight: "250 gms", price: "₹95.00", category: "pickle" },
-            { name: "Garlic Pickle", tamilName: "பூண்டு ஊறுகாய்", weight: "250 gms", price: "₹95.00", category: "pickle" },
-            { name: "Sorungal Thokku", tamilName: "சோழங்கல் தொக்கு", weight: "200 gms", price: "₹95.00", category: "thokku" },
-            { name: "Tomato Thokku", tamilName: "தக்காளி தொக்கு", weight: "200 gms", price: "₹95.00", category: "thokku" },
-            { name: "Mango Thokku", tamilName: "மாங்காய் தொக்கு", weight: "200 gms", price: "₹95.00", category: "thokku" },
-            { name: "Mudakathan Thokku", tamilName: "முடக்கத்தான் தொக்கு", weight: "200 gms", price: "₹100.00", category: "thokku" },
-            { name: "Pirandai Thuvayal", tamilName: "பிரண்டை துவையல்", weight: "200 gms", price: "₹100.00", category: "thokku" },
-            { name: "Puli Kaichal", tamilName: "புளி காய்ச்சல்", weight: "200 gms", price: "₹100.00", category: "thokku" },
-            { name: "Vatha Kulambu Paste", tamilName: "வத்த குழம்பு பேஸ்ட்", weight: "200 gms", price: "₹100.00", category: "thokku" },
-            { name: "Sambar Podi", tamilName: "சாம்பார் பொடி", weight: "200 gms", price: "₹100.00", category: "powder" },
-            { name: "Rasam Podi", tamilName: "ரசம் பொடி", weight: "200 gms", price: "₹100.00", category: "powder" },
-            { name: "Kariveppilai Podi", tamilName: "கரிவேப்பிலை பொடி", weight: "100 gms", price: "₹65.00", category: "powder" },
-            { name: "Thengai Podi", tamilName: "தேங்காய் பொடி", weight: "100 gms", price: "₹65.00", category: "powder" },
-            { name: "Paruppu Podi", tamilName: "பருப்பு பொடி", weight: "100 gms", price: "₹65.00", category: "powder" },
-            { name: "Idli Milagai Podi", tamilName: "இட்லி மிளகாய் பொடி", weight: "100 gms", price: "₹65.00", category: "powder" },
-            { name: "Sundakkai Vathal", tamilName: "சுண்டக்காய் வத்தல்", weight: "100 gms", price: "₹60.00", category: "vathal" },
-            { name: "Manthakali Vathal", tamilName: "மாந்தக்காளி வத்தல்", weight: "100 gms", price: "₹60.00", category: "vathal" },
-            { name: "Onion Vathal", tamilName: "வெங்காய வத்தல்", weight: "100 gms", price: "₹60.00", category: "vathal" },
-            { name: "Kothavarangai Vathal", tamilName: "கொத்தவரங்காய் வத்தல்", weight: "100 gms", price: "₹60.00", category: "vathal" },
-            { name: "More Milagai Vathal", tamilName: "மோர் மிளகாய் வத்தல்", weight: "50 gms", price: "₹50.00", category: "vathal" },
-            { name: "Uppu Narthangai", tamilName: "உப்பு நார்த்தங்காய்", weight: "50 gms", price: "₹50.00", category: "others" },
-            { name: "Vepampoo", tamilName: "வேப்பம்பூ", weight: "50 gms", price: "₹50.00", category: "others" },
-            { name: "Veppilai Katti", tamilName: "வேப்பிலை கட்டி", weight: "50 gms", price: "₹50.00", category: "others" }
-        ];
+
+        var products = [];
+
+        fetch('assets/data.json')
+            .then(response => response.json())
+            .then(data => {
+                products = data.products;
+                console.log(products); // use this to render your product list
+                renderProducts();
+            });
 
         // Function to render products
         function renderProducts(category = "all") {
@@ -437,9 +399,6 @@
                 tableBody.appendChild(row);
             });
         }
-
-        // Initialize with all products
-        renderProducts();
 
         // Add event listeners to filter buttons
         document.querySelectorAll(".filter-btn").forEach(button => {
