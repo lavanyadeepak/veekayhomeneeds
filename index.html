@@ -290,6 +290,115 @@
             cursor: pointer;
         }
         
+        /* Order Summary Styles */
+        .order-summary {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 5px solid #1976d2;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .summary-total {
+            border-top: 1px solid #bbdefb;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #d32f2f;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from {top: -50px; opacity: 0}
+            to {top: 0; opacity: 1}
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            color: #333;
+        }
+        
+        .preview-title {
+            color: #b71c1c;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ffcdd2;
+            padding-bottom: 10px;
+        }
+        
+        .preview-details {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        
+        .preview-table th {
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+            padding: 8px;
+            color: #555;
+        }
+        
+        .preview-table td {
+            border-bottom: 1px solid #eee;
+            padding: 8px;
+        }
+        
+        .preview-total-row {
+            text-align: right;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-top: 15px;
+        }
+        
         /* Location Status Styles */
         #location-status {
             margin-top: 10px;
@@ -521,12 +630,59 @@
                     <input type="hidden" id="location-address" name="location-address">
                 </div>
                 
-                <button id="place-order-btn" class="order-btn">
-                    <i class="fab fa-whatsapp"></i> Place Order via WhatsApp
+                <!-- Live Summary -->
+                <div id="live-summary" class="order-summary" style="display: none;">
+                    <div class="summary-row">
+                        <span>Total Items:</span>
+                        <span id="summary-count">0</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span>Estimated Total:</span>
+                        <span id="summary-cost">₹0.00</span>
+                    </div>
+                </div>
+                
+                <button id="review-order-btn" class="order-btn">
+                    <i class="fas fa-list-alt"></i> Review & Place Order
                 </button>
             </div>
         </section>
     </main>
+    
+    <!-- Order Preview Modal -->
+    <div id="preview-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 class="preview-title">Order Preview</h2>
+            
+            <div class="preview-details">
+                <p><strong>Name:</strong> <span id="preview-name"></span></p>
+                <p><strong>Mobile:</strong> <span id="preview-mobile"></span></p>
+                <p><strong>Address:</strong> <span id="preview-address"></span></p>
+            </div>
+            
+            <div style="max-height: 300px; overflow-y: auto;">
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="preview-items"></tbody>
+                </table>
+            </div>
+            
+            <div class="preview-total-row">
+                Total: <span id="preview-total-cost">₹0.00</span>
+            </div>
+            
+            <button id="confirm-order-btn" class="order-btn" style="margin-top: 20px;">
+                <i class="fab fa-whatsapp"></i> Confirm & Send via WhatsApp
+            </button>
+        </div>
+    </div>
 
     <!-- Footer Section -->
     <footer>
@@ -611,6 +767,7 @@
                 `;
                 tableBody.appendChild(row);
             });
+            updateSummary();
         }
         
         // Search Event Listener
@@ -639,7 +796,39 @@
                     delete cart[name];
                 }
             }
+            updateSummary();
         });
+
+        // Helper to parse price string (e.g., "₹116.00" -> 116.00)
+        function parsePrice(priceStr) {
+            return parseFloat(priceStr.replace(/[^0-9.]/g, '')) || 0;
+        }
+
+        // Function to update live summary
+        function updateSummary() {
+            let totalQty = 0;
+            let totalCost = 0;
+            
+            for (let key in cart) {
+                const item = cart[key];
+                const qty = parseInt(item.quantity) || 0;
+                const price = parsePrice(item.price);
+                
+                totalQty += qty;
+                totalCost += (qty * price);
+            }
+            
+            document.getElementById('summary-count').textContent = totalQty;
+            document.getElementById('summary-cost').textContent = '₹' + totalCost.toFixed(2);
+            
+            // Show summary if items exist
+            const summaryDiv = document.getElementById('live-summary');
+            if (totalQty > 0) {
+                summaryDiv.style.display = 'block';
+            } else {
+                summaryDiv.style.display = 'none';
+            }
+        }
 
         // ============ LOCATION CAPTURE FUNCTIONALITY ============
         
@@ -735,8 +924,8 @@
                 });
         }
 
-        // Handle Order Submission
-        document.getElementById('place-order-btn').addEventListener('click', function() {
+        // Handle Review Order (Open Modal)
+        document.getElementById('review-order-btn').addEventListener('click', function() {
             const name = document.getElementById('customer-name').value.trim();
             const mobile = document.getElementById('customer-mobile').value.trim();
             const address = document.getElementById('customer-address').value.trim();
@@ -751,6 +940,55 @@
                 alert("Please select at least one product.");
                 return;
             }
+            
+            // Populate Modal
+            document.getElementById('preview-name').textContent = name;
+            document.getElementById('preview-mobile').textContent = mobile;
+            document.getElementById('preview-address').textContent = address || "Not provided";
+            
+            const previewItems = document.getElementById('preview-items');
+            previewItems.innerHTML = "";
+            let totalCost = 0;
+            
+            cartItems.forEach(itemName => {
+                const item = cart[itemName];
+                const priceVal = parsePrice(item.price);
+                const itemTotal = priceVal * item.quantity;
+                totalCost += itemTotal;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${itemName} <small>(${item.weight})</small></td>
+                    <td>${item.quantity}</td>
+                    <td>₹${itemTotal.toFixed(2)}</td>
+                `;
+                previewItems.appendChild(row);
+            });
+            
+            document.getElementById('preview-total-cost').textContent = '₹' + totalCost.toFixed(2);
+            
+            // Show Modal
+            document.getElementById('preview-modal').style.display = "block";
+        });
+
+        // Close Modal Logic
+        document.querySelector('.close-modal').addEventListener('click', function() {
+            document.getElementById('preview-modal').style.display = "none";
+        });
+        
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('preview-modal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        });
+
+        // Handle Final WhatsApp Submission
+        document.getElementById('confirm-order-btn').addEventListener('click', function() {
+            const name = document.getElementById('customer-name').value.trim();
+            const mobile = document.getElementById('customer-mobile').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            const cartItems = Object.keys(cart);
             
             let message = `*New Order from VEE KAY HOME NEEDS Website*\n\n`;
             message += `*Name:* ${name}\n`;
@@ -773,11 +1011,16 @@
             
             message += `\n*Order Details:*\n`;
             
+            let totalCost = 0;
             cartItems.forEach((itemName, index) => {
                 const item = cart[itemName];
-                message += `${index + 1}. ${itemName} (${item.weight}) - Qty: ${item.quantity} - Price: ${item.price}\n`;
+                const priceVal = parsePrice(item.price);
+                const itemTotal = priceVal * item.quantity;
+                totalCost += itemTotal;
+                message += `${index + 1}. ${itemName} (${item.weight}) - Qty: ${item.quantity} - ₹${itemTotal.toFixed(2)}\n`;
             });
             
+            message += `\n*Total Estimated Cost: ₹${totalCost.toFixed(2)}*`;
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/919790922524?text=${encodedMessage}`;
             
