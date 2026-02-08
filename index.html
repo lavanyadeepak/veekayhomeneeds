@@ -186,6 +186,74 @@
             font-size: 1.2rem;
         }
         
+        /* Order Form Styles */
+        .order-form {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 40px;
+            border-top: 4px solid #d32f2f;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .order-btn {
+            background-color: #25D366; /* WhatsApp Green */
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .order-btn:hover {
+            background-color: #128C7E;
+        }
+        
+        .qty-input {
+            width: 70px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .product-select {
+            text-align: center;
+        }
+        
+        .product-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
         /* Footer Styles */
         footer {
             background-color: #333;
@@ -319,9 +387,11 @@
             <table class="product-table">
                 <thead>
                     <tr>
-                        <th width="50%">Item Name</th>
-                        <th width="25%" class="product-weight">Weight</th>
-                        <th width="25%" class="product-price">Price</th>
+                        <th width="10%" class="product-select">Select</th>
+                        <th width="40%">Item Name</th>
+                        <th width="20%" class="product-weight">Weight</th>
+                        <th width="15%" class="product-price">Price</th>
+                        <th width="15%" class="product-qty">Qty</th>
                     </tr>
                 </thead>
                 <tbody id="product-table-body">
@@ -332,6 +402,26 @@
             <!-- Note -->
             <div class="note">
                 <p><strong>Note:</strong> Shipping charges extra.</p>
+            </div>
+            
+            <!-- Order Form -->
+            <div class="order-form">
+                <h2 class="section-title">Place Your Order</h2>
+                <div class="form-group">
+                    <label for="customer-name">Name</label>
+                    <input type="text" id="customer-name" class="form-control" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="customer-mobile">Mobile Number</label>
+                    <input type="tel" id="customer-mobile" class="form-control" placeholder="Enter your mobile number">
+                </div>
+                <div class="form-group">
+                    <label for="customer-address">Delivery Address</label>
+                    <textarea id="customer-address" class="form-control" rows="3" placeholder="Enter your full delivery address"></textarea>
+                </div>
+                <button id="place-order-btn" class="order-btn">
+                    <i class="fab fa-whatsapp"></i> Place Order via WhatsApp
+                </button>
             </div>
         </section>
     </main>
@@ -368,6 +458,7 @@
     <script>
 
         var products = [];
+        var cart = {}; // Object to store selected items
 
         fetch('assets/data.json')
             .then(response => response.json())
@@ -387,18 +478,92 @@
                 : products.filter(product => product.category === category);
             
             filteredProducts.forEach(product => {
+                // Check if product is already in cart
+                const isChecked = cart[product.name] ? 'checked' : '';
+                const qty = cart[product.name] ? cart[product.name].quantity : 1;
+                
                 const row = document.createElement("tr");
+                // Store product data in dataset for easy retrieval
+                row.dataset.name = product.name;
+                row.dataset.price = product.price;
+                row.dataset.weight = product.weight;
+                
                 row.innerHTML = `
+                    <td class="product-select">
+                        <input type="checkbox" class="product-checkbox" ${isChecked}>
+                    </td>
                     <td>
                         <div class="product-name">${product.name}</div>
                         <div class="tamil-name">${product.tamilName}</div>
                     </td>
                     <td class="product-weight">${product.weight}</td>
                     <td class="product-price">${product.price}</td>
+                    <td class="product-qty">
+                        <input type="number" class="qty-input" value="${qty}" min="1">
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });
         }
+        
+        // Event delegation for table interactions (checkbox and quantity)
+        document.getElementById('product-table-body').addEventListener('change', function(e) {
+            const target = e.target;
+            const row = target.closest('tr');
+            if (!row) return;
+            
+            const name = row.dataset.name;
+            const price = row.dataset.price;
+            const weight = row.dataset.weight;
+            const checkbox = row.querySelector('.product-checkbox');
+            const qtyInput = row.querySelector('.qty-input');
+            
+            if (target.classList.contains('product-checkbox') || target.classList.contains('qty-input')) {
+                if (checkbox.checked) {
+                    cart[name] = {
+                        quantity: qtyInput.value,
+                        price: price,
+                        weight: weight
+                    };
+                } else {
+                    delete cart[name];
+                }
+            }
+        });
+
+        // Handle Order Submission
+        document.getElementById('place-order-btn').addEventListener('click', function() {
+            const name = document.getElementById('customer-name').value.trim();
+            const mobile = document.getElementById('customer-mobile').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            
+            if (!name || !mobile) {
+                alert("Please fill in your Name and Mobile Number.");
+                return;
+            }
+            
+            const cartItems = Object.keys(cart);
+            if (cartItems.length === 0) {
+                alert("Please select at least one product.");
+                return;
+            }
+            
+            let message = `*New Order from VEE KAY HOME NEEDS Website*\n\n`;
+            message += `*Name:* ${name}\n`;
+            message += `*Mobile:* ${mobile}\n`;
+            message += `*Address:* ${address}\n\n`;
+            message += `*Order Details:*\n`;
+            
+            cartItems.forEach((itemName, index) => {
+                const item = cart[itemName];
+                message += `${index + 1}. ${itemName} (${item.weight}) - Qty: ${item.quantity} - Price: ${item.price}\n`;
+            });
+            
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/919790922524?text=${encodedMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
+        });
 
         // Add event listeners to filter buttons
         document.querySelectorAll(".filter-btn").forEach(button => {
