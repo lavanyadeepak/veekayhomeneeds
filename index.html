@@ -186,6 +186,36 @@
             font-size: 1.2rem;
         }
         
+        /* Search Bar Styles */
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 25px;
+            position: relative;
+        }
+
+        #search-product {
+            width: 100%;
+            padding: 12px 20px;
+            padding-left: 45px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        #search-product:focus {
+            border-color: #d32f2f;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+
         /* Responsive Table Wrapper */
         .table-responsive {
             overflow-x: auto;
@@ -376,6 +406,12 @@
         <section class="product-section">
             <h2 class="section-title">Our Products</h2>
             
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="search-product" placeholder="Search for products...">
+            </div>
+            
             <!-- Category Filter -->
             <div class="category-filter">
                 <button class="filter-btn active" data-category="all">All Products</button>
@@ -393,11 +429,10 @@
             <table class="product-table">
                 <thead>
                     <tr>
-                        <th width="10%" class="product-select">Select</th>
-                        <th width="40%">Item Name</th>
-                        <th width="20%" class="product-weight">Weight</th>
-                        <th width="15%" class="product-price">Price</th>
-                        <th width="15%" class="product-qty">Qty</th>
+                        <th width="5%" class="product-select">Select</th>
+                        <th width="35%">Item Name (Weight)</th>
+                        <th width="30%" class="product-price">Price</th>
+                        <th width="25%" class="product-qty">Qty</th>
                     </tr>
                 </thead>
                 <tbody id="product-table-body">
@@ -466,6 +501,7 @@
 
         var products = [];
         var cart = {}; // Object to store selected items
+        var currentCategory = "all"; // Track current category
 
         fetch('assets/data.json')
             .then(response => response.json())
@@ -476,13 +512,17 @@
             });
 
         // Function to render products
-        function renderProducts(category = "all") {
+        function renderProducts() {
+            const searchTerm = document.getElementById('search-product').value.toLowerCase();
             const tableBody = document.getElementById("product-table-body");
             tableBody.innerHTML = "";
             
-            const filteredProducts = category === "all" 
-                ? products 
-                : products.filter(product => product.category === category);
+            const filteredProducts = products.filter(product => {
+                const matchesCategory = currentCategory === "all" || product.category === currentCategory;
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm) || 
+                                      (product.tamilName && product.tamilName.toLowerCase().includes(searchTerm));
+                return matchesCategory && matchesSearch;
+            });
             
             filteredProducts.forEach(product => {
                 // Check if product is already in cart
@@ -500,10 +540,9 @@
                         <input type="checkbox" class="product-checkbox" ${isChecked}>
                     </td>
                     <td>
-                        <div class="product-name">${product.name}</div>
+                        <div class="product-name">${product.name} (${product.weight})</div>
                         <div class="tamil-name">${product.tamilName}</div>
                     </td>
-                    <td class="product-weight">${product.weight}</td>
                     <td class="product-price">${product.price}</td>
                     <td class="product-qty">
                         <input type="number" class="qty-input" value="${qty}" min="1">
@@ -512,6 +551,9 @@
                 tableBody.appendChild(row);
             });
         }
+        
+        // Search Event Listener
+        document.getElementById('search-product').addEventListener('input', renderProducts);
         
         // Event delegation for table interactions (checkbox and quantity)
         document.getElementById('product-table-body').addEventListener('change', function(e) {
@@ -584,8 +626,8 @@
                 this.classList.add("active");
                 
                 // Get category and render products
-                const category = this.getAttribute("data-category");
-                renderProducts(category);
+                currentCategory = this.getAttribute("data-category");
+                renderProducts();
             });
         });
     </script>
